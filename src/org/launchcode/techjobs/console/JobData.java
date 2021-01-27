@@ -7,9 +7,7 @@ import org.apache.commons.csv.CSVRecord;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by LaunchCode
@@ -57,12 +55,12 @@ public class JobData {
     /**
      * Returns results of search the jobs data by key/value, using
      * inclusion of the search term.
-     *
+     * <p>
      * For example, searching for employer "Enterprise" will include results
      * with "Enterprise Holdings, Inc".
      *
-     * @param column   Column that should be searched.
-     * @param value Value of teh field to search for
+     * @param column Column that should be searched.
+     * @param value  Value of teh field to search for
      * @return List of all jobs matching the criteria
      */
     public static ArrayList<HashMap<String, String>> findByColumnAndValue(String column, String value) {
@@ -74,9 +72,9 @@ public class JobData {
 
         for (HashMap<String, String> row : allJobs) {
 
-            String aValue = row.get(column);
+            String aValue = row.get(column).toLowerCase(Locale.ROOT);
 
-            if (aValue.contains(value)) {
+            if (aValue.contains(value.toLowerCase(Locale.ROOT))) {
                 jobs.add(row);
             }
         }
@@ -118,11 +116,34 @@ public class JobData {
 
             // flag the data as loaded, so we don't do it twice
             isDataLoaded = true;
-
         } catch (IOException e) {
             System.out.println("Failed to load job data");
             e.printStackTrace();
         }
     }
+    public static ArrayList<HashMap<String, String>> findByValue(String searchValue) {
+        loadData();//System.out.println("LoadData");
+        ArrayList<HashMap<String, String>> jobSearch = new ArrayList<>();
+        for (HashMap<String, String> job : allJobs) {
+                for (Map.Entry<String, String> entry : job.entrySet()) {
+                        String jobValue = entry.getValue().toLowerCase(Locale.ROOT);
+                            if (jobValue.contains(searchValue.toLowerCase(Locale.ROOT))) {
+                            jobSearch.add(job);
+                        }
+                }
+        }
+        Set<HashMap<String,String>> removeDuplicates = new HashSet<>(jobSearch);
+        jobSearch.clear();
+        jobSearch.addAll(removeDuplicates);
+        return jobSearch;
+    }
+
+
 
 }
+
+
+
+
+
+
